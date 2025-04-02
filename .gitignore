@@ -1,0 +1,19 @@
+# Node modules
+**/node_modules/
+
+# Logs
+**/*.log
+
+# dotenv files
+**/.env
+
+# IDE files
+.vscode/
+.DS_Store
+
+# Build outputs
+**/.next/
+**/dist/
+
+# Docker
+**/docker-volume/
