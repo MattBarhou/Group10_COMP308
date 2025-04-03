@@ -48,18 +48,18 @@ export default function LoginForm() {
     };
 
     return (
-        <div className="max-w-md w-full mx-auto p-6 bg-white rounded-lg shadow-md">
-            <h1 className="text-2xl font-bold text-center mb-6">Login</h1>
+        <div className="max-w-md w-full mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+            <h1 className="text-2xl font-bold text-center mb-6 dark:text-white">Login</h1>
 
             {error && (
-                <div className="bg-red-50 text-red-500 p-3 rounded mb-4">
+                <div className="bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 p-3 rounded mb-4">
                     {error}
                 </div>
             )}
 
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                    <label htmlFor="email" className="block mb-2 text-sm font-medium">
+                    <label htmlFor="email" className="block mb-2 text-sm font-medium dark:text-gray-200">
                         Email
                     </label>
                     <input
@@ -67,13 +67,13 @@ export default function LoginForm() {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                     />
                 </div>
 
                 <div className="mb-6">
-                    <label htmlFor="password" className="block mb-2 text-sm font-medium">
+                    <label htmlFor="password" className="block mb-2 text-sm font-medium dark:text-gray-200">
                         Password
                     </label>
                     <input
@@ -81,7 +81,7 @@ export default function LoginForm() {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                     />
                 </div>
@@ -95,9 +95,9 @@ export default function LoginForm() {
                 </button>
 
                 <div className="mt-4 text-center">
-                    <p className="text-sm">
+                    <p className="text-sm dark:text-gray-300">
                         Don&apos;t have an account?{' '}
-                        <Link href="/auth/register" className="text-blue-600 hover:underline">
+                        <Link href="/auth/register" className="text-blue-600 dark:text-blue-400 hover:underline">
                             Register
                         </Link>
                     </p>
