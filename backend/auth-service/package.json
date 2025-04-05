@@ -1,17 +1,4 @@
 {
-<<<<<<< HEAD
-  "dependencies": {
-    "@apollo/server": "^4.11.3",
-    "@apollo/subgraph": "^2.10.0",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^5.1.0",
-    "graphql": "^16.10.0",
-    "graphql-tag": "^2.12.6",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.13.1"
-=======
   "name": "auth-service",
   "version": "1.0.0",
   "description": "Authentication service for Community app",
@@ -32,6 +19,5 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
->>>>>>> e7f18a635fb148293bdfd58472ae72bb9f531ed2
   }
 }
