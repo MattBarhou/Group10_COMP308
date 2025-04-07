@@ -1,10 +1,19 @@
 const { gql } = require('apollo-server-express');
 
 const typeDefs = gql`
-  type Business {
+  extend schema
+    @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@external", "@requires"])
+
+  extend type User @key(fields: "id") {
+    id: ID! @external
+    businesses: [Business!]!  
+  }
+
+  type Business @key(fields: "id") {
     id: ID!
     name: String!
     ownerId: ID!
+    owner: User!
     description: String!
     address: String!
     phone: String!
@@ -16,7 +25,7 @@ const typeDefs = gql`
     reviews: [Review]
   }
 
-  type Deal {
+  type Deal @key(fields: "id") {
     id: ID!
     businessId: ID!
     title: String!
@@ -30,10 +39,11 @@ const typeDefs = gql`
     business: Business
   }
 
-  type Review {
+  type Review @key(fields: "id") {
     id: ID!
     businessId: ID!
     userId: ID!
+    user: User!
     rating: Int!
     text: String!
     sentimentScore: Float
@@ -86,30 +96,20 @@ const typeDefs = gql`
   }
 
   type Query {
-    # Business queries
     getBusinesses: [Business]
     getBusinessById(id: ID!): Business
     getBusinessesByOwnerId: [Business]
-    
-    # Deal queries
     getActiveDeals: [Deal]
     getDealsByBusinessId(businessId: ID!): [Deal]
-    
-    # Review queries
     getReviewsByBusinessId(businessId: ID!): [Review]
   }
 
   type Mutation {
-    # Business mutations
     createBusiness(input: BusinessInput!): Business!
-    
-    # Deal mutations
     createDeal(input: DealInput!): Deal!
-    
-    # Review mutations
     createReview(input: ReviewInput!): Review!
     respondToReview(input: ReviewResponseInput!): Review!
   }
 `;
 
-module.exports = typeDefs; 
+module.exports = typeDefs;
