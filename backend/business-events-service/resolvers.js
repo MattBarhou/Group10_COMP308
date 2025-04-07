@@ -19,21 +19,33 @@ const checkBusinessOwner = async (businessId, userId) => {
 
 const resolvers = {
     Business: {
+        __resolveReference: async (ref) => {
+            return await Business.findById(ref.id);
+        },
         deals: async (parent) => {
             return await Deal.find({ businessId: parent.id });
         },
         reviews: async (parent) => {
             return await Review.find({ businessId: parent.id });
-        }
+        },
+        owner: (business) => {
+            return { id: business.ownerId }; // Return a reference to User
+        },
     },
 
     Deal: {
+        __resolveReference: async (ref) => {
+            return await Deal.findById(ref.id);
+        },
         business: async (parent) => {
             return await Business.findById(parent.businessId);
-        }
+        },
     },
 
     Review: {
+        __resolveReference: async (ref) => {
+            return await Review.findById(ref.id);
+        },
         business: async (parent) => {
             return await Business.findById(parent.businessId);
         },
@@ -42,146 +54,117 @@ const resolvers = {
                 return getSentimentFeedback(parent.sentimentScore);
             }
             return null;
-        }
+        },
+        user: (review) => {
+            return { id: review.userId }; // Return a reference to User
+        },
+    },
+
+    User: {
+        businesses: async (user) => {
+            return await Business.find({ ownerId: user.id });
+        },
     },
 
     Query: {
-        // Business queries
         getBusinesses: async () => {
             return await Business.find().sort({ createdAt: -1 });
         },
-
         getBusinessById: async (_, { id }) => {
             return await Business.findById(id);
         },
-
         getBusinessesByOwnerId: async (_, __, { user }) => {
             if (!user) {
                 throw new Error('Authentication required');
             }
-
             if (user.role !== 'business_owner') {
                 throw new Error('Only business owners can access this resource');
             }
-
             return await Business.find({ ownerId: user.id }).sort({ createdAt: -1 });
         },
-
-        // Deal queries
         getDealsByBusinessId: async (_, { businessId }) => {
             return await Deal.find({ businessId }).sort({ createdAt: -1 });
         },
-
         getActiveDeals: async () => {
             const now = new Date();
             return await Deal.find({
                 active: true,
                 startDate: { $lte: now },
-                endDate: { $gte: now }
+                endDate: { $gte: now },
             }).sort({ createdAt: -1 });
         },
-
-        // Review queries
         getReviewsByBusinessId: async (_, { businessId }) => {
             return await Review.find({ businessId }).sort({ createdAt: -1 });
-        }
+        },
     },
 
     Mutation: {
-        // Business mutations
         createBusiness: async (_, { input }, { user }) => {
             if (!user) {
                 throw new Error('Authentication required');
             }
-
             if (user.role !== 'business_owner') {
                 throw new Error('Only business owners can create businesses');
             }
-
             const business = new Business({
                 ...input,
                 ownerId: user.id,
-                createdAt: new Date()
+                createdAt: new Date().toISOString(),
             });
-
             return await business.save();
         },
-
-        // Deal mutations
         createDeal: async (_, { input }, { user }) => {
             if (!user) {
                 throw new Error('Authentication required');
             }
-
             await checkBusinessOwner(input.businessId, user.id);
-
             const deal = new Deal({
                 ...input,
                 active: true,
-                createdAt: new Date()
+                createdAt: new Date().toISOString(),
             });
-
             return await deal.save();
         },
-
-        // Review mutations
         createReview: async (_, { input }, { user }) => {
             if (!user) {
                 throw new Error('Authentication required');
             }
-
             const { businessId, rating, text } = input;
-
-            // Check if business exists
             const business = await Business.findById(businessId);
             if (!business) {
                 throw new Error('Business not found');
             }
-
-            // Prevent business owners from reviewing their own business
             if (user.role === 'business_owner' && business.ownerId.toString() === user.id) {
                 throw new Error('You cannot review your own business');
             }
-
-            // Analyze sentiment
             const sentimentScore = analyzeSentiment(text);
-
             const review = new Review({
                 businessId,
                 userId: user.id,
                 rating,
                 text,
                 sentimentScore,
-                createdAt: new Date()
+                createdAt: new Date().toISOString(),
             });
-
             return await review.save();
         },
-
         respondToReview: async (_, { input }, { user }) => {
             if (!user) {
                 throw new Error('Authentication required');
             }
-
             const { reviewId, text } = input;
-
             const review = await Review.findById(reviewId);
             if (!review) {
                 throw new Error('Review not found');
             }
-
-            // Check if user is the business owner
             await checkBusinessOwner(review.businessId, user.id);
-
-            // Add response to review
             review.response = {
                 text,
-                createdAt: new Date()
+                createdAt: new Date().toISOString(),
             };
-
             return await review.save();
-        }
-    }
+        },
+    },
 };
 
-module.exports = resolvers; 
+module.exports = resolvers;
