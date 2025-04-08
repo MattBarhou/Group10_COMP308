@@ -19,11 +19,16 @@ app.use(express.json());
 const getUser = (token) => {
     if (token) {
         try {
-            return jwt.verify(token, JWT_SECRET);
+            console.log('Attempting to verify token:', token);
+            const decoded = jwt.verify(token, JWT_SECRET);
+            console.log('Decoded token:', decoded);
+            return decoded;
         } catch (error) {
+            console.error('Token verification failed:', error.message);
             return null;
         }
     }
+    console.log('No token provided');
     return null;
 };
 
@@ -31,12 +36,15 @@ async function startServer() {
     const server = new ApolloServer({
         schema: buildSubgraphSchema({ typeDefs, resolvers }),
         context: ({ req }) => {
+            console.log('Incoming request headers:', req.headers);
             const token = req.headers.authorization?.split(' ')[1] || '';
+            console.log('Extracted token:', token);
             const user = getUser(token);
+            console.log('User context:', user);
             return { user };
         },
         formatError: (error) => {
-            console.log('GraphQL Error:', error);
+            console.error('GraphQL Error:', error);
             return {
                 message: error.message,
                 locations: error.locations,

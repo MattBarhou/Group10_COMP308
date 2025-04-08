@@ -1,8 +1,15 @@
 const natural = require('natural');
-const { SentimentAnalyzer, PorterStemmer } = natural;
+const { WordTokenizer } = natural;
+const Analyzer = require('natural').SentimentAnalyzer;
+const stemmer = require('natural').PorterStemmer;
+const tokenizer = new WordTokenizer();
 
-// Initialize the sentiment analyzer
-const analyzer = new SentimentAnalyzer('English', PorterStemmer, 'afinn');
+// Initialize the sentiment analyzer with English language and AFINN lexicon
+const analyzer = new Analyzer("English", stemmer, "afinn");
+
+// List of positive and negative words to enhance the analysis
+const positiveWords = ['great', 'good', 'awesome', 'excellent', 'amazing', 'wonderful', 'fantastic', 'delicious', 'love', 'perfect'];
+const negativeWords = ['bad', 'poor', 'terrible', 'awful', 'horrible', 'disappointing', 'worst', 'hate'];
 
 /**
  * Analyze the sentiment of text
@@ -12,11 +19,24 @@ const analyzer = new SentimentAnalyzer('English', PorterStemmer, 'afinn');
 const analyzeSentiment = (text) => {
     if (!text) return 0;
 
-    // Tokenize the text into words
-    const words = text.toLowerCase().split(/\s+/);
+    // Convert to lowercase and tokenize
+    const tokens = tokenizer.tokenize(text.toLowerCase());
+    if (!tokens || tokens.length === 0) return 0;
 
-    // Get the sentiment score
-    const score = analyzer.getSentiment(words);
+    // Get base sentiment score
+    let score = analyzer.getSentiment(tokens);
+
+    // Enhance score based on specific words
+    tokens.forEach(token => {
+        if (positiveWords.includes(token)) {
+            score += 0.5;
+        } else if (negativeWords.includes(token)) {
+            score -= 0.5;
+        }
+    });
+
+    // Normalize score to be between -5 and 5
+    score = Math.max(-5, Math.min(5, score * 5));
 
     return score;
 };
@@ -30,15 +50,21 @@ const getSentimentFeedback = (score) => {
     let sentiment;
     let feedback;
 
-    if (score < -0.5) {
+    if (score <= -2) {
+        sentiment = 'Very Negative';
+        feedback = 'This review expresses significant concerns. Immediate attention may be required.';
+    } else if (score < 0) {
         sentiment = 'Negative';
         feedback = 'This review has a negative sentiment. Consider addressing the concerns raised.';
-    } else if (score < 0.2) {
+    } else if (score === 0) {
         sentiment = 'Neutral';
         feedback = 'This review has a neutral sentiment. Consider finding ways to improve customer satisfaction.';
-    } else {
+    } else if (score <= 2) {
         sentiment = 'Positive';
-        feedback = 'This review has a positive sentiment. Great job!';
+        feedback = 'This review has a positive sentiment. Keep up the good work!';
+    } else {
+        sentiment = 'Very Positive';
+        feedback = 'This review is extremely positive. Excellent job!';
     }
 
     return {

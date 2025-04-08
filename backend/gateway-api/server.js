@@ -5,6 +5,15 @@ require('dotenv').config();
 
 const PORT = process.env.PORT || 4000;
 
+class AuthenticatedDataSource extends RemoteGraphQLDataSource {
+    willSendRequest({ request, context }) {
+        // Forward the authorization header
+        if (context?.headers?.authorization) {
+            request.http.headers.set('authorization', context.headers.authorization);
+        }
+    }
+}
+
 // Setup Apollo Gateway
 const gateway = new ApolloGateway({
     supergraphSdl: new IntrospectAndCompose({
@@ -13,17 +22,8 @@ const gateway = new ApolloGateway({
             { name: 'business-events', url: process.env.BUSINESS_EVENTS_SERVICE_URL || 'http://localhost:4002/graphql' },
         ],
     }),
-    // Configure the Gateway to forward the Authorization header
     buildService({ name, url }) {
-        return new RemoteGraphQLDataSource({
-            url,
-            // Customize the fetcher to include the Authorization header
-            willSendRequest({ request, context }) {
-                if (context.headers && context.headers.authorization) {
-                    request.http.headers.set('authorization', context.headers.authorization);
-                }
-            },
-        });
+        return new AuthenticatedDataSource({ url });
     },
 });
 
@@ -38,10 +38,7 @@ async function startServer() {
     const { url } = await startStandaloneServer(server, {
         listen: { port: PORT },
         context: async ({ req }) => {
-            const token = req.headers.authorization?.split(' ')[1] || '';
-
             return {
-                token,
                 headers: {
                     authorization: req.headers.authorization || '',
                 },
