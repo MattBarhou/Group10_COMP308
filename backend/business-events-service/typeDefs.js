@@ -18,7 +18,6 @@ const typeDefs = gql`
     address: String!
     phone: String!
     email: String!
-    images: [String]
     category: String!
     createdAt: String!
     deals: [Deal]
@@ -30,7 +29,6 @@ const typeDefs = gql`
     businessId: ID!
     title: String!
     description: String!
-    image: String
     startDate: String!
     endDate: String!
     discount: Float
@@ -70,7 +68,6 @@ const typeDefs = gql`
     address: String!
     phone: String!
     email: String!
-    images: [String]
     category: String!
   }
 
@@ -78,7 +75,6 @@ const typeDefs = gql`
     businessId: ID!
     title: String!
     description: String!
-    image: String
     startDate: String!
     endDate: String!
     discount: Float

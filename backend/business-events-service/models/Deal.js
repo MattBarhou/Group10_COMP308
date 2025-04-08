@@ -16,9 +16,6 @@ const DealSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    image: {
-        type: String
-    },
     startDate: {
         type: Date,
         required: true

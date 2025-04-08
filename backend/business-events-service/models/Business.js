@@ -33,9 +33,6 @@ const BusinessSchema = new mongoose.Schema({
         lowercase: true,
         match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email address']
     },
-    images: [{
-        type: String
-    }],
     category: {
         type: String,
         required: true,
@@ -43,7 +40,13 @@ const BusinessSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now
+        default: function () {
+            const now = new Date();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const year = String(now.getFullYear()).slice(-2);
+            return new Date(`${month}/${day}/${year}`);
+        }
     }
 });
 
