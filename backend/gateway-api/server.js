@@ -1,6 +1,7 @@
-const { ApolloServer } = require('@apollo/server');
-const { startStandaloneServer } = require('@apollo/server/standalone');
+const express = require('express');
+const { ApolloServer } = require('apollo-server-express');
 const { ApolloGateway, IntrospectAndCompose, RemoteGraphQLDataSource } = require('@apollo/gateway');
+const cors = require('cors');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 4000;
@@ -20,6 +21,7 @@ const gateway = new ApolloGateway({
         subgraphs: [
             { name: 'auth', url: process.env.AUTH_SERVICE_URL || 'http://localhost:4001/graphql' },
             { name: 'business-events', url: process.env.BUSINESS_EVENTS_SERVICE_URL || 'http://localhost:4002/graphql' },
+            { name: 'community', url: process.env.COMMUNITY_SERVICE_URL || 'http://localhost:4003/graphql' },
         ],
     }),
     buildService({ name, url }) {
@@ -29,15 +31,14 @@ const gateway = new ApolloGateway({
 
 // Initialize Apollo Server
 async function startServer() {
+    const app = express();
+    app.use(cors());
+
     const server = new ApolloServer({
         gateway,
         subscriptions: false,
         introspection: true,
-    });
-
-    const { url } = await startStandaloneServer(server, {
-        listen: { port: PORT },
-        context: async ({ req }) => {
+        context: ({ req }) => {
             return {
                 headers: {
                     authorization: req.headers.authorization || '',
@@ -46,7 +47,12 @@ async function startServer() {
         },
     });
 
-    console.log(`Gateway API running at ${url}`);
+    await server.start();
+    server.applyMiddleware({ app });
+
+    app.listen(PORT, () => {
+        console.log(`Gateway API running at http://localhost:${PORT}${server.graphqlPath}`);
+    });
 }
 
 startServer().catch((err) => {

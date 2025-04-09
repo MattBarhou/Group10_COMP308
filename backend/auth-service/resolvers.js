@@ -1,22 +1,30 @@
 const jwt = require('jsonwebtoken');
+// Load environment variables
+require('dotenv').config();
 const User = require('./models/User');
 
-// Environment variables should be properly set in production
+// Use the environment variable
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 
 // Helper to generate JWT
 const generateToken = (user) => {
-
     return jwt.sign(
-        {id: user.id, email: user.email, role: user.role},
+        { id: user.id, email: user.email, role: user.role },
         JWT_SECRET,
-        {expiresIn: '24h'}
+        { expiresIn: '24h' }
     );
 };
 
 const resolvers = {
+    User: {
+        // Add a resolver for User references from other services
+        __resolveReference: async (reference) => {
+            return await User.findById(reference.id);
+        }
+    },
+
     Query: {
-        getCurrentUser: async (_, __, {user}) => {
+        getCurrentUser: async (_, __, { user }) => {
             if (!user) {
                 throw new Error('Authentication required');
             }
@@ -28,7 +36,7 @@ const resolvers = {
             }
         },
 
-        getUserById: async (_, {id}, {user}) => {
+        getUserById: async (_, { id }, { user }) => {
             if (!user) {
                 throw new Error('Authentication required');
             }
@@ -42,12 +50,12 @@ const resolvers = {
     },
 
     Mutation: {
-        register: async (_, {input}) => {
-            const {username, email, password, role} = input;
+        register: async (_, { input }) => {
+            const { username, email, password, role } = input;
 
             // Check if user already exists
             const existingUser = await User.findOne({
-                $or: [{email}, {username}]
+                $or: [{ email }, { username }]
             });
 
             if (existingUser) {
@@ -77,11 +85,11 @@ const resolvers = {
             }
         },
 
-        login: async (_, {input}) => {
-            const {email, password} = input;
+        login: async (_, { input }) => {
+            const { email, password } = input;
 
             // Find user by email
-            const user = await User.findOne({email});
+            const user = await User.findOne({ email });
 
             if (!user) {
                 throw new Error('Invalid credentials');
@@ -103,7 +111,7 @@ const resolvers = {
             };
         },
 
-        updateUser: async (_, {input}, {user}) => {
+        updateUser: async (_, { input }, { user }) => {
             if (!user) {
                 throw new Error('Authentication required');
             }
@@ -111,8 +119,8 @@ const resolvers = {
             try {
                 const updatedUser = await User.findByIdAndUpdate(
                     user.id,
-                    {$set: input},
-                    {new: true}
+                    { $set: input },
+                    { new: true }
                 );
 
                 return updatedUser;
@@ -121,7 +129,7 @@ const resolvers = {
             }
         },
 
-        changePassword: async (_, {currentPassword, newPassword}, {user}) => {
+        changePassword: async (_, { currentPassword, newPassword }, { user }) => {
             if (!user) {
                 throw new Error('Authentication required');
             }
@@ -147,7 +155,7 @@ const resolvers = {
             }
         },
 
-        deleteAccount: async (_, __, {user}) => {
+        deleteAccount: async (_, __, { user }) => {
             if (!user) {
                 throw new Error('Authentication required');
             }
