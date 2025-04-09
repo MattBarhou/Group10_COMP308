@@ -4,6 +4,8 @@ const { buildSubgraphSchema } = require('@apollo/subgraph');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+// Load .env variables before using them
+require('dotenv').config();
 const typeDefs = require('./typeDefs');
 const resolvers = require('./resolvers');
 
@@ -32,7 +34,11 @@ async function startServer() {
     const server = new ApolloServer({
         schema: buildSubgraphSchema({ typeDefs, resolvers }),
         context: ({ req }) => {
-            const token = req.headers.authorization?.split(' ')[1] || '';
+            const authHeader = req.headers.authorization || '';
+            let token = '';
+            if (authHeader.startsWith('Bearer ')) {
+                token = authHeader.slice(7).trim();
+            }
             const user = getUser(token);
             return { user };
         },

@@ -36,7 +36,6 @@ async function startServer() {
     const server = new ApolloServer({
         schema: buildSubgraphSchema({ typeDefs, resolvers }),
         context: ({ req }) => {
-            console.log('Incoming request headers:', req.headers);
             const token = req.headers.authorization?.split(' ')[1] || '';
             console.log('Extracted token:', token);
             const user = getUser(token);
