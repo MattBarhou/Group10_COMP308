@@ -1,7 +1,6 @@
-// lib/auth.js
 import { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
@@ -15,7 +14,7 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const decoded = jwtDecode(token);
+        const decoded = decode(token);
         // Check if token is expired
         if (decoded.exp * 1000 < Date.now()) {
           localStorage.removeItem("token");

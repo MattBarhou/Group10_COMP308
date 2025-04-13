@@ -1,11 +1,24 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../../lib/auth";
-import NavBar from "../../components/ui/NavBar";
-import Footer from "../../components/ui/Footer";
+import { AuthProvider } from "../lib/auth";
+import NavBar from "../components/ui/NavBar";
+import Footer from "../components/ui/Footer";
+import { useAuth } from "../lib/auth";
 
-export default function ProtectedLayout({ children }) {
+export default function Layout({ children }) {
+  return (
+    <AuthProvider>
+      <html lang="en">
+        <body>
+          <ProtectedLayout>{children}</ProtectedLayout>
+        </body>
+      </html>
+    </AuthProvider>
+  );
+}
+
+function ProtectedLayout({ children }) {
   const { user, loading } = useAuth();
   const router = useRouter();
 
