@@ -31,7 +31,7 @@ export function formatDate(dateString, format = "medium") {
       hour: "2-digit",
       minute: "2-digit",
     },
-    relative: {}, // Handled differently
+    relative: {},
   };
 
   if (format === "relative") {

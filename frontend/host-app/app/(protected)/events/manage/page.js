@@ -75,7 +75,7 @@ export default function ManageEvents() {
   const myEvents =
     data?.events.filter((event) => event.organizer.id === user?.id) || [];
 
-  // Sort events by date (upcoming first)
+  // Sort events by date
   const sortedEvents = [...myEvents].sort(
     (a, b) => new Date(a.date) - new Date(b.date)
   );

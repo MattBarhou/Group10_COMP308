@@ -29,12 +29,10 @@ export default function Businesses() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  // Extract unique categories from businesses
   const categories = data?.getBusinesses
     ? [...new Set(data.getBusinesses.map((business) => business.category))]
     : [];
 
-  // Filter businesses based on search term and category
   const filteredBusinesses = data?.getBusinesses
     ? data.getBusinesses.filter((business) => {
         const matchesSearch =

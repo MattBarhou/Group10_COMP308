@@ -57,7 +57,7 @@ export default function Events() {
       })
     : [];
 
-  // Sort events by date (upcoming first)
+  // Sort events by date
   const sortedEvents = [...(filteredEvents || [])].sort((a, b) => {
     return new Date(a.date) - new Date(b.date);
   });

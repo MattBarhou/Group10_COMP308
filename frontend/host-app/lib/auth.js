@@ -1,3 +1,4 @@
+"use client";
 import { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
@@ -11,23 +12,27 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     // Check if user is logged in
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decoded = decode(token);
-        // Check if token is expired
-        if (decoded.exp * 1000 < Date.now()) {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          if (decoded.exp * 1000 < Date.now()) {
+            localStorage.removeItem("token");
+            setUser(null);
+          } else {
+            setUser(decoded);
+          }
+        } catch (error) {
           localStorage.removeItem("token");
           setUser(null);
-        } else {
-          setUser(decoded);
         }
-      } catch (error) {
-        localStorage.removeItem("token");
-        setUser(null);
       }
+    } catch (error) {
+      console.error("Auth initialization error:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   const login = (token, userData) => {
@@ -42,19 +47,17 @@ export function AuthProvider({ children }) {
     router.push("/login");
   };
 
-  const isAuthenticated = () => {
-    return !!user;
-  };
-
   return (
-    <AuthContext.Provider
-      value={{ user, login, logout, loading, isAuthenticated }}
-    >
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 }

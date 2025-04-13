@@ -24,7 +24,7 @@ export default function ProtectedLayout({ children }) {
   }
 
   if (!user) {
-    return null; // Will redirect in the useEffect
+    return null;
   }
 
   return (

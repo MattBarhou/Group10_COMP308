@@ -1,142 +1,183 @@
 "use client";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useMutation, gql } from "@apollo/client";
-import { useAuth } from "../../../lib/auth";
 import Link from "next/link";
-import NavBar from "../../../components/ui/NavBar";
 
-const LOGIN_MUTATION = gql`
-  mutation Login($input: LoginInput!) {
-    login(input: $input) {
-      token
-      user {
-        id
-        username
-        email
-        role
-      }
-    }
-  }
-`;
+// Inline styles
+const styles = {
+  container: {
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    backgroundColor: "#f3f4f6",
+  },
+  nav: {
+    backgroundColor: "white",
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+    padding: "1rem",
+  },
+  navInner: {
+    maxWidth: "1200px",
+    margin: "0 auto",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  logo: {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    color: "#111827",
+    textDecoration: "none",
+  },
+  navLinks: {
+    display: "flex",
+    gap: "1rem",
+  },
+  loginLink: {
+    color: "#4B5563",
+    textDecoration: "none",
+  },
+  registerLink: {
+    backgroundColor: "#3B82F6",
+    color: "white",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.375rem",
+    textDecoration: "none",
+  },
+  main: {
+    flexGrow: 1,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "1.5rem",
+  },
+  formContainer: {
+    width: "100%",
+    maxWidth: "28rem",
+  },
+  formCard: {
+    backgroundColor: "white",
+    padding: "2rem",
+    borderRadius: "0.5rem",
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+  },
+  title: {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    marginBottom: "1.5rem",
+    textAlign: "center",
+    color: "#111827",
+  },
+  formGroup: {
+    marginBottom: "1.5rem",
+  },
+  label: {
+    display: "block",
+    fontSize: "0.875rem",
+    fontWeight: "500",
+    marginBottom: "0.5rem",
+    color: "#374151",
+  },
+  input: {
+    width: "100%",
+    padding: "0.5rem 0.75rem",
+    borderRadius: "0.375rem",
+    border: "1px solid #D1D5DB",
+    outline: "none",
+  },
+  button: {
+    width: "100%",
+    backgroundColor: "#3B82F6",
+    color: "white",
+    padding: "0.75rem",
+    borderRadius: "0.375rem",
+    border: "none",
+    fontWeight: "500",
+    cursor: "pointer",
+  },
+  footer: {
+    textAlign: "center",
+    marginTop: "1.5rem",
+    fontSize: "0.875rem",
+    color: "#4B5563",
+  },
+  footerLink: {
+    color: "#3B82F6",
+    fontWeight: "500",
+    textDecoration: "none",
+  },
+};
 
 export default function Login() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-  const [loginError, setLoginError] = useState("");
-  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [loginMutation, { loading }] = useMutation(LOGIN_MUTATION, {
-    onCompleted: (data) => {
-      login(data.login.token, data.login.user);
-    },
-    onError: (error) => {
-      setLoginError(error.message);
-    },
-  });
-
-  const onSubmit = (data) => {
-    loginMutation({
-      variables: {
-        input: {
-          email: data.email,
-          password: data.password,
-        },
-      },
-    });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Login attempt with:", email, password);
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <NavBar />
+    <div style={styles.container}>
+      <nav style={styles.nav}>
+        <div style={styles.navInner}>
+          <Link href="/" style={styles.logo}>
+            Community App
+          </Link>
+          <div style={styles.navLinks}>
+            <Link href="/login" style={styles.loginLink}>
+              Login
+            </Link>
+            <Link href="/register" style={styles.registerLink}>
+              Register
+            </Link>
+          </div>
+        </div>
+      </nav>
 
-      <main className="flex-grow flex items-center justify-center p-6">
-        <div className="w-full max-w-md">
-          <div className="bg-white p-8 rounded-lg shadow-md dark:bg-gray-800">
-            <h1 className="text-2xl font-bold mb-6 text-center">Sign In</h1>
+      <main style={styles.main}>
+        <div style={styles.formContainer}>
+          <div style={styles.formCard}>
+            <h1 style={styles.title}>Sign In</h1>
 
-            {loginError && (
-              <div
-                className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6"
-                role="alert"
-              >
-                <p>{loginError}</p>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                >
+            <form onSubmit={handleSubmit}>
+              <div style={styles.formGroup}>
+                <label htmlFor="email" style={styles.label}>
                   Email
                 </label>
                 <input
                   id="email"
                   type="email"
-                  {...register("email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Invalid email address",
-                    },
-                  })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  style={styles.input}
                 />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.email.message}
-                  </p>
-                )}
               </div>
 
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                >
+              <div style={styles.formGroup}>
+                <label htmlFor="password" style={styles.label}>
                   Password
                 </label>
                 <input
                   id="password"
                   type="password"
-                  {...register("password", {
-                    required: "Password is required",
-                  })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  style={styles.input}
                 />
-                {errors.password && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.password.message}
-                  </p>
-                )}
               </div>
 
-              <div>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                >
-                  {loading ? "Signing in..." : "Sign In"}
-                </button>
-              </div>
+              <button type="submit" style={styles.button}>
+                Sign In
+              </button>
             </form>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Don't have an account?{" "}
-                <Link
-                  href="/register"
-                  className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
-                >
-                  Sign up
-                </Link>
-              </p>
+            <div style={styles.footer}>
+              Don't have an account?{" "}
+              <Link href="/register" style={styles.footerLink}>
+                Sign up
+              </Link>
             </div>
           </div>
         </div>
