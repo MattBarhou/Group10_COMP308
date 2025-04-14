@@ -282,12 +282,12 @@ export default function ManageBusinesses() {
   });
 
   // Use auth with try-catch to handle cases where context might not be available
-  let auth;
-  try {
-    auth = useAuth();
-  } catch (error) {
-    console.error("Auth provider not available:", error);
-  }
+  let auth = useAuth();
+  // try {
+  //   auth = useAuth();
+  // } catch (error) {
+  //   console.error("Auth provider not available:", error);
+  // }
 
   const { loading, error, data, refetch } = useQuery(GET_MY_BUSINESSES);
 
@@ -534,7 +534,7 @@ export default function ManageBusinesses() {
               <div style={styles.emptyIcon}>🏪</div>
               <h2 style={styles.emptyTitle}>No Businesses Yet</h2>
               <p style={styles.emptyText}>
-                You haven't created any businesses yet. Add your first business
+                You haven&apos;t created any businesses yet. Add your first business
                 to get started.
               </p>
               <button

@@ -256,13 +256,12 @@ const styles = {
 export default function HelpRequestDetail() {
   const { id } = useParams();
 
-  // Use auth with try-catch to handle cases where context might not be available
-  let auth;
-  try {
-    auth = useAuth();
-  } catch (error) {
-    console.error("Auth provider not available:", error);
-  }
+  let auth = useAuth();
+  // try {
+  //   auth = useAuth();
+  // } catch (error) {
+  //   console.error("Auth provider not available:", error);
+  // }
 
   const { loading, error, data, refetch } = useQuery(GET_HELP_REQUEST, {
     variables: { id },
@@ -519,7 +518,7 @@ export default function HelpRequestDetail() {
               {isVolunteer && (
                 <div style={styles.alreadyVolunteeringNote}>
                   <span>✅</span>
-                  <span>You're currently helping with this request</span>
+                  <span>You&apos;re currently helping with this request</span>
                 </div>
               )}
 
@@ -541,7 +540,7 @@ export default function HelpRequestDetail() {
                   <span>ℹ️</span>
                   <span>
                     When someone volunteers to help, the status will change to
-                    "In Progress".
+                    &quote;In Progress&quote;.
                   </span>
                 </div>
               )}
@@ -551,7 +550,7 @@ export default function HelpRequestDetail() {
                   <span>ℹ️</span>
                   <span>
                     When the help is complete, you can mark this request as
-                    "Completed".
+                    &quote;Completed&quote;.
                   </span>
                 </div>
               )}

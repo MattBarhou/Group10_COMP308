@@ -246,12 +246,12 @@ export default function Businesses() {
   const [selectedCategory, setSelectedCategory] = useState("");
 
   // Use auth with try-catch to handle cases where context might not be available
-  let auth;
-  try {
-    auth = useAuth();
-  } catch (error) {
-    console.error("Auth provider not available:", error);
-  }
+  let auth = useAuth();
+  // try {
+  //   auth = useAuth();
+  // } catch (error) {
+  //   console.error("Auth provider not available:", error);
+  // }
 
   const { loading, error, data } = useQuery(GET_BUSINESSES);
 

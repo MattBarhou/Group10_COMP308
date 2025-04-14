@@ -166,12 +166,12 @@ const styles = {
 
 export default function Dashboard() {
   const router = useRouter();
-  let auth;
-  try {
-    auth = useAuth();
-  } catch (error) {
-    console.error("Auth provider not available:", error);
-  }
+  let auth = useAuth();
+  // try {
+  //   auth = useAuth();
+  // } catch (error) {
+  //   console.error("Auth provider not available:", error);
+  // }
 
   useEffect(() => {
     if (!auth || !auth.user) {
@@ -234,7 +234,7 @@ export default function Dashboard() {
                     <h2 style={styles.cardTitle}>Local News & Discussions</h2>
                   </div>
                   <p style={styles.cardText}>
-                    Stay updated with what's happening in your community.
+                    Stay updated with what&apos;s happening in your community.
                   </p>
                 </div>
                 <div style={styles.cardFooter}>View posts</div>

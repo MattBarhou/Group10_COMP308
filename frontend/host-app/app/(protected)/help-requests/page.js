@@ -342,12 +342,12 @@ export default function HelpRequests() {
   const [statusFilter, setStatusFilter] = useState("");
 
   // Use auth with try-catch to handle cases where context might not be available
-  let auth;
-  try {
-    auth = useAuth();
-  } catch (error) {
-    console.error("Auth provider not available:", error);
-  }
+  let auth = useAuth();
+  // try {
+  //   auth = useAuth();
+  // } catch (error) {
+  //   console.error("Auth provider not available:", error);
+  // }
 
   const { loading, error, data, refetch } = useQuery(GET_HELP_REQUESTS);
 
@@ -620,7 +620,7 @@ export default function HelpRequests() {
 
                       {isVolunteer && (
                         <span style={styles.helpingText}>
-                          You're helping with this request
+                          You&apos;re helping with this request
                         </span>
                       )}
 

@@ -219,12 +219,12 @@ const styles = {
 };
 
 export default function Home() {
-  let auth;
-  try {
-    auth = useAuth();
-  } catch (error) {
-    console.error("Auth provider not available:", error);
-  }
+  let auth = useAuth();
+  // try {
+  //   auth = useAuth();
+  // } catch (error) {
+  //   console.error("Auth provider not available:", error);
+  // }
 
   const isLoggedIn = auth && auth.user;
 
@@ -298,7 +298,7 @@ export default function Home() {
                 <div style={styles.featureIcon}>📰</div>
                 <h3 style={styles.featureTitle}>Local News & Discussions</h3>
                 <p style={styles.featureText}>
-                  Stay informed about what's happening in your neighborhood and
+                  Stay informed about what&apos;s happening in your neighborhood and
                   join community discussions.
                 </p>
               </div>
