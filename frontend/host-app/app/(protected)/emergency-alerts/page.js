@@ -3,12 +3,6 @@ import { useState } from "react";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import Link from "next/link";
 import { useAuth } from "../../../lib/auth";
-import {
-  FaBell,
-  FaExclamationTriangle,
-  FaSearch,
-  FaPlus,
-} from "react-icons/fa";
 
 const GET_EMERGENCY_ALERTS = gql`
   query GetEmergencyAlerts {
@@ -54,8 +48,267 @@ const CREATE_EMERGENCY_ALERT = gql`
   }
 `;
 
+// Inline styles
+const styles = {
+  container: {
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    backgroundColor: "#f3f4f6",
+  },
+  nav: {
+    backgroundColor: "white",
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+    padding: "1rem",
+  },
+  navInner: {
+    maxWidth: "1200px",
+    margin: "0 auto",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  logo: {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    color: "#111827",
+    textDecoration: "none",
+  },
+  navLinks: {
+    display: "flex",
+    gap: "1rem",
+  },
+  navLink: {
+    color: "#4B5563",
+    textDecoration: "none",
+  },
+  logoutButton: {
+    backgroundColor: "#EF4444",
+    color: "white",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.375rem",
+    textDecoration: "none",
+    border: "none",
+    cursor: "pointer",
+  },
+  main: {
+    flexGrow: 1,
+    padding: "2rem",
+  },
+  content: {
+    maxWidth: "1000px",
+    margin: "0 auto",
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "2rem",
+  },
+  headerTitle: {
+    fontSize: "2rem",
+    fontWeight: "bold",
+    color: "#111827",
+  },
+  reportButton: {
+    backgroundColor: "#EF4444",
+    color: "white",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.375rem",
+    textDecoration: "none",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    cursor: "pointer",
+    border: "none",
+  },
+  formContainer: {
+    backgroundColor: "white",
+    borderRadius: "0.5rem",
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+    padding: "1.5rem",
+    marginBottom: "2rem",
+  },
+  formTitle: {
+    fontSize: "1.25rem",
+    fontWeight: "bold",
+    marginBottom: "1.5rem",
+    color: "#111827",
+  },
+  formGroup: {
+    marginBottom: "1.5rem",
+  },
+  label: {
+    display: "block",
+    fontWeight: "500",
+    marginBottom: "0.5rem",
+    color: "#4B5563",
+  },
+  input: {
+    width: "100%",
+    padding: "0.75rem",
+    borderRadius: "0.375rem",
+    border: "1px solid #D1D5DB",
+    outline: "none",
+  },
+  textarea: {
+    width: "100%",
+    padding: "0.75rem",
+    borderRadius: "0.375rem",
+    border: "1px solid #D1D5DB",
+    outline: "none",
+    minHeight: "120px",
+  },
+  select: {
+    width: "100%",
+    padding: "0.75rem",
+    borderRadius: "0.375rem",
+    border: "1px solid #D1D5DB",
+    outline: "none",
+  },
+  formActions: {
+    display: "flex",
+    justifyContent: "flex-end",
+  },
+  submitButton: {
+    backgroundColor: "#EF4444",
+    color: "white",
+    padding: "0.75rem 1.5rem",
+    borderRadius: "0.375rem",
+    border: "none",
+    fontWeight: "500",
+    cursor: "pointer",
+  },
+  disabledButton: {
+    opacity: "0.5",
+    cursor: "not-allowed",
+  },
+  filterContainer: {
+    backgroundColor: "white",
+    borderRadius: "0.5rem",
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+    padding: "1.5rem",
+    marginBottom: "2rem",
+  },
+  filterForm: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "1rem",
+  },
+  filterGroup: {
+    flexGrow: 1,
+  },
+  searchInput: {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+  },
+  searchIcon: {
+    position: "absolute",
+    left: "0.75rem",
+    color: "#9CA3AF",
+  },
+  inputWithIcon: {
+    width: "100%",
+    padding: "0.75rem",
+    paddingLeft: "2.5rem",
+    borderRadius: "0.375rem",
+    border: "1px solid #D1D5DB",
+    outline: "none",
+  },
+  alertsList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+  },
+  alertCard: {
+    backgroundColor: "white",
+    borderRadius: "0.5rem",
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+    overflow: "hidden",
+  },
+  alertContent: {
+    padding: "1.5rem",
+  },
+  alertHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: "0.75rem",
+  },
+  alertTitle: {
+    fontSize: "1.25rem",
+    fontWeight: "bold",
+    color: "#111827",
+    marginBottom: "0.5rem",
+  },
+  alertSeverityBadge: {
+    padding: "0.25rem 0.75rem",
+    borderRadius: "9999px",
+    fontSize: "0.75rem",
+    fontWeight: "600",
+  },
+  alertDescription: {
+    color: "#4B5563",
+    marginBottom: "1rem",
+  },
+  alertLocation: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    color: "#4B5563",
+    fontSize: "0.875rem",
+    marginBottom: "0.5rem",
+  },
+  alertFooter: {
+    borderTop: "1px solid #E5E7EB",
+    padding: "1rem 1.5rem",
+    backgroundColor: "#F9FAFB",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    fontSize: "0.875rem",
+    color: "#6B7280",
+  },
+  viewDetailsLink: {
+    color: "#EF4444",
+    textDecoration: "none",
+    fontWeight: "500",
+  },
+  loadingContainer: {
+    display: "flex",
+    justifyContent: "center",
+    padding: "4rem 0",
+  },
+  spinner: {
+    width: "3rem",
+    height: "3rem",
+    border: "0.25rem solid #E5E7EB",
+    borderTopColor: "#EF4444",
+    borderRadius: "50%",
+  },
+  errorContainer: {
+    backgroundColor: "#FEE2E2",
+    padding: "1rem",
+    borderRadius: "0.375rem",
+    marginBottom: "1rem",
+    color: "#B91C1C",
+  },
+  emptyState: {
+    textAlign: "center",
+    padding: "4rem 0",
+    color: "#6B7280",
+  },
+  footer: {
+    backgroundColor: "#F9FAFB",
+    borderTop: "1px solid #E5E7EB",
+    padding: "1.5rem",
+    textAlign: "center",
+    color: "#6B7280",
+  },
+};
+
 export default function EmergencyAlerts() {
-  const { user } = useAuth();
   const [showNewAlertForm, setShowNewAlertForm] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -63,6 +316,14 @@ export default function EmergencyAlerts() {
   const [location, setLocation] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [severityFilter, setSeverityFilter] = useState("");
+
+  // Use auth with try-catch to handle cases where context might not be available
+  let auth;
+  try {
+    auth = useAuth();
+  } catch (error) {
+    console.error("Auth provider not available:", error);
+  }
 
   const { loading, error, data, refetch } = useQuery(GET_EMERGENCY_ALERTS);
 
@@ -92,29 +353,54 @@ export default function EmergencyAlerts() {
     });
   };
 
+  const handleLogout = () => {
+    if (auth && auth.logout) {
+      auth.logout();
+    }
+  };
+
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch (error) {
+      return dateString;
+    }
   };
 
   const getSeverityColor = (severity) => {
     switch (severity) {
       case "LOW":
-        return "text-blue-500 bg-blue-100 dark:bg-blue-900 dark:text-blue-300";
+        return {
+          badge: { backgroundColor: "#DBEAFE", color: "#1E40AF" },
+          icon: "🔵",
+        };
       case "MEDIUM":
-        return "text-yellow-600 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300";
+        return {
+          badge: { backgroundColor: "#FEF3C7", color: "#92400E" },
+          icon: "🟡",
+        };
       case "HIGH":
-        return "text-orange-500 bg-orange-100 dark:bg-orange-900 dark:text-orange-300";
+        return {
+          badge: { backgroundColor: "#FFEDD5", color: "#C2410C" },
+          icon: "🟠",
+        };
       case "CRITICAL":
-        return "text-red-500 bg-red-100 dark:bg-red-900 dark:text-red-300";
+        return {
+          badge: { backgroundColor: "#FEE2E2", color: "#B91C1C" },
+          icon: "🔴",
+        };
       default:
-        return "text-gray-500 bg-gray-100 dark:bg-gray-800 dark:text-gray-300";
+        return {
+          badge: { backgroundColor: "#F3F4F6", color: "#4B5563" },
+          icon: "ℹ️",
+        };
     }
   };
 
@@ -134,8 +420,8 @@ export default function EmergencyAlerts() {
       })
     : [];
 
-  // Sort alerts by severity and date (critical first, then by most recent)
-  const sortedAlerts = [...(filteredAlerts || [])].sort((a, b) => {
+  // Sort alerts by severity (critical first) and then by date
+  const sortedAlerts = [...filteredAlerts].sort((a, b) => {
     const severityOrder = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
     if (severityOrder[a.severity] !== severityOrder[b.severity]) {
       return severityOrder[a.severity] - severityOrder[b.severity];
@@ -144,200 +430,224 @@ export default function EmergencyAlerts() {
   });
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Emergency Alerts</h1>
-        <button
-          onClick={() => setShowNewAlertForm(!showNewAlertForm)}
-          className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 flex items-center"
-        >
-          <FaPlus className="mr-2" />
-          {showNewAlertForm ? "Cancel" : "Report Emergency"}
-        </button>
-      </div>
-
-      {showNewAlertForm && (
-        <div className="bg-white p-6 rounded-lg shadow-md mb-8 dark:bg-gray-800">
-          <h2 className="text-xl font-semibold mb-4">Report an Emergency</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Title
-              </label>
-              <input
-                id="title"
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Description
-              </label>
-              <textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-                rows="5"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600"
-              ></textarea>
-            </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="severity"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Severity
-              </label>
-              <select
-                id="severity"
-                value={severity}
-                onChange={(e) => setSeverity(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600"
-              >
-                <option value="LOW">Low</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="HIGH">High</option>
-                <option value="CRITICAL">Critical</option>
-              </select>
-            </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="location"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Location
-              </label>
-              <input
-                id="location"
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                required
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600"
-              />
-            </div>
-
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={createLoading}
-                className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
-              >
-                {createLoading ? "Submitting..." : "Submit Alert"}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      <div className="bg-white p-6 rounded-lg shadow-md mb-8 dark:bg-gray-800">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-grow">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <FaSearch className="text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search alerts..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600"
-              />
-            </div>
-          </div>
-
-          <div className="md:w-64">
-            <select
-              value={severityFilter}
-              onChange={(e) => setSeverityFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600"
-            >
-              <option value="">All Severities</option>
-              <option value="LOW">Low</option>
-              <option value="MEDIUM">Medium</option>
-              <option value="HIGH">High</option>
-              <option value="CRITICAL">Critical</option>
-            </select>
+    <div style={styles.container}>
+      <nav style={styles.nav}>
+        <div style={styles.navInner}>
+          <Link href="/" style={styles.logo}>
+            Community App
+          </Link>
+          <div style={styles.navLinks}>
+            <Link href="/dashboard" style={styles.navLink}>
+              Dashboard
+            </Link>
+            <Link href="/profile" style={styles.navLink}>
+              Profile
+            </Link>
+            <button onClick={handleLogout} style={styles.logoutButton}>
+              Logout
+            </button>
           </div>
         </div>
-      </div>
+      </nav>
 
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
-        </div>
-      ) : error ? (
-        <div
-          className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4"
-          role="alert"
-        >
-          <p>Error loading alerts: {error.message}</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-6">
-          {sortedAlerts.map((alert) => (
-            <div
-              key={alert.id}
-              className="bg-white p-6 rounded-lg shadow-md dark:bg-gray-800"
+      <main style={styles.main}>
+        <div style={styles.content}>
+          <div style={styles.header}>
+            <h1 style={styles.headerTitle}>Emergency Alerts</h1>
+            <button
+              onClick={() => setShowNewAlertForm(!showNewAlertForm)}
+              style={styles.reportButton}
             >
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center">
-                  <FaExclamationTriangle className="text-red-500 h-5 w-5 mr-2" />
-                  <Link
-                    href={`/emergency-alerts/${alert.id}`}
-                    className="text-xl font-semibold hover:text-red-600 dark:hover:text-red-400"
-                  >
-                    {alert.title}
-                  </Link>
+              {showNewAlertForm ? "Cancel" : "⚠️ Report Emergency"}
+            </button>
+          </div>
+
+          {showNewAlertForm && (
+            <div style={styles.formContainer}>
+              <h2 style={styles.formTitle}>Report an Emergency</h2>
+              <form onSubmit={handleSubmit}>
+                <div style={styles.formGroup}>
+                  <label htmlFor="title" style={styles.label}>
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                    style={styles.input}
+                    placeholder="Brief description of the emergency"
+                  />
                 </div>
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${getSeverityColor(
-                    alert.severity
-                  )}`}
+
+                <div style={styles.formGroup}>
+                  <label htmlFor="description" style={styles.label}>
+                    Description
+                  </label>
+                  <textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                    style={styles.textarea}
+                    placeholder="Provide detailed information about the emergency"
+                  ></textarea>
+                </div>
+
+                <div style={styles.formGroup}>
+                  <label htmlFor="severity" style={styles.label}>
+                    Severity
+                  </label>
+                  <select
+                    id="severity"
+                    value={severity}
+                    onChange={(e) => setSeverity(e.target.value)}
+                    style={styles.select}
+                  >
+                    <option value="LOW">Low - Informational, non-urgent</option>
+                    <option value="MEDIUM">
+                      Medium - Requires attention, not immediate danger
+                    </option>
+                    <option value="HIGH">
+                      High - Urgent situation, potential danger
+                    </option>
+                    <option value="CRITICAL">
+                      Critical - Immediate action required, danger present
+                    </option>
+                  </select>
+                </div>
+
+                <div style={styles.formGroup}>
+                  <label htmlFor="location" style={styles.label}>
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    id="location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    required
+                    style={styles.input}
+                    placeholder="Specific address or area affected"
+                  />
+                </div>
+
+                <div style={styles.formActions}>
+                  <button
+                    type="submit"
+                    disabled={createLoading}
+                    style={{
+                      ...styles.submitButton,
+                      ...(createLoading ? styles.disabledButton : {}),
+                    }}
+                  >
+                    {createLoading ? "Submitting..." : "Submit Alert"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          <div style={styles.filterContainer}>
+            <div style={styles.filterForm}>
+              <div style={styles.filterGroup}>
+                <div style={styles.searchInput}>
+                  <span style={styles.searchIcon}>🔍</span>
+                  <input
+                    type="text"
+                    placeholder="Search alerts..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={styles.inputWithIcon}
+                  />
+                </div>
+              </div>
+
+              <div style={styles.filterGroup}>
+                <select
+                  value={severityFilter}
+                  onChange={(e) => setSeverityFilter(e.target.value)}
+                  style={styles.select}
                 >
-                  {alert.severity}
-                </span>
-              </div>
-
-              <p className="text-gray-600 mb-4 dark:text-gray-400">
-                {alert.description}
-              </p>
-
-              <div className="text-sm text-gray-500 mb-2 dark:text-gray-400">
-                <strong>Location:</strong> {alert.location}
-              </div>
-
-              <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
-                <span>Reported by {alert.reporter.username}</span>
-                <span>{formatDate(alert.createdAt)}</span>
+                  <option value="">All Severities</option>
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HIGH">High</option>
+                  <option value="CRITICAL">Critical</option>
+                </select>
               </div>
             </div>
-          ))}
+          </div>
 
-          {sortedAlerts.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500 dark:text-gray-400">
-                No emergency alerts at this time.
-              </p>
+          {loading ? (
+            <div style={styles.loadingContainer}>
+              <div style={styles.spinner}></div>
+            </div>
+          ) : error ? (
+            <div style={styles.errorContainer}>
+              <p>Error loading alerts: {error.message}</p>
+            </div>
+          ) : sortedAlerts.length > 0 ? (
+            <div style={styles.alertsList}>
+              {sortedAlerts.map((alert) => {
+                const severityStyle = getSeverityColor(alert.severity);
+
+                return (
+                  <div key={alert.id} style={styles.alertCard}>
+                    <div style={styles.alertContent}>
+                      <div style={styles.alertHeader}>
+                        <h2 style={styles.alertTitle}>
+                          {severityStyle.icon} {alert.title}
+                        </h2>
+                        <span
+                          style={{
+                            ...styles.alertSeverityBadge,
+                            ...severityStyle.badge,
+                          }}
+                        >
+                          {alert.severity}
+                        </span>
+                      </div>
+
+                      <p style={styles.alertDescription}>{alert.description}</p>
+
+                      <div style={styles.alertLocation}>
+                        <span>📍</span>
+                        <span>{alert.location}</span>
+                      </div>
+                    </div>
+
+                    <div style={styles.alertFooter}>
+                      <span>
+                        Reported by {alert.reporter.username} on{" "}
+                        {formatDate(alert.createdAt)}
+                      </span>
+                      <Link
+                        href={`/emergency-alerts/${alert.id}`}
+                        style={styles.viewDetailsLink}
+                      >
+                        View Details →
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div style={styles.emptyState}>
+              <p>No emergency alerts at this time.</p>
             </div>
           )}
         </div>
-      )}
+      </main>
+
+      <footer style={styles.footer}>
+        <p>
+          © {new Date().getFullYear()} Community Engagement App. All rights
+          reserved.
+        </p>
+      </footer>
     </div>
   );
 }

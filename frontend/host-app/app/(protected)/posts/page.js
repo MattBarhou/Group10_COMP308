@@ -1,9 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useQuery, useMutation, gql } from "@apollo/client";
-import NavBar from "../../../components/ui/NavBar";
+import Link from "next/link";
 import { useAuth } from "../../../lib/auth";
-import { FaComment, FaNewspaper } from "react-icons/fa";
 
 const GET_POSTS = gql`
   query GetPosts {
@@ -39,12 +38,233 @@ const CREATE_POST = gql`
   }
 `;
 
+// Inline styles
+const styles = {
+  container: {
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    backgroundColor: "#f3f4f6",
+  },
+  nav: {
+    backgroundColor: "white",
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+    padding: "1rem",
+  },
+  navInner: {
+    maxWidth: "1200px",
+    margin: "0 auto",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  logo: {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    color: "#111827",
+    textDecoration: "none",
+  },
+  navLinks: {
+    display: "flex",
+    gap: "1rem",
+  },
+  navLink: {
+    color: "#4B5563",
+    textDecoration: "none",
+  },
+  logoutButton: {
+    backgroundColor: "#EF4444",
+    color: "white",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.375rem",
+    textDecoration: "none",
+    border: "none",
+    cursor: "pointer",
+  },
+  main: {
+    flexGrow: 1,
+    padding: "2rem",
+  },
+  content: {
+    maxWidth: "1000px",
+    margin: "0 auto",
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "2rem",
+  },
+  headerTitle: {
+    fontSize: "2rem",
+    fontWeight: "bold",
+    color: "#111827",
+  },
+  newPostButton: {
+    backgroundColor: "#3B82F6",
+    color: "white",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.375rem",
+    textDecoration: "none",
+    cursor: "pointer",
+    border: "none",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+  },
+  formContainer: {
+    backgroundColor: "white",
+    borderRadius: "0.5rem",
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+    padding: "1.5rem",
+    marginBottom: "2rem",
+  },
+  formTitle: {
+    fontSize: "1.25rem",
+    fontWeight: "bold",
+    marginBottom: "1.5rem",
+    color: "#111827",
+  },
+  formGroup: {
+    marginBottom: "1.5rem",
+  },
+  label: {
+    display: "block",
+    marginBottom: "0.5rem",
+    fontWeight: "500",
+    color: "#374151",
+  },
+  input: {
+    width: "100%",
+    padding: "0.5rem 0.75rem",
+    borderRadius: "0.375rem",
+    border: "1px solid #D1D5DB",
+    outline: "none",
+  },
+  textarea: {
+    width: "100%",
+    padding: "0.5rem 0.75rem",
+    borderRadius: "0.375rem",
+    border: "1px solid #D1D5DB",
+    outline: "none",
+    minHeight: "150px",
+  },
+  select: {
+    width: "100%",
+    padding: "0.5rem 0.75rem",
+    borderRadius: "0.375rem",
+    border: "1px solid #D1D5DB",
+    outline: "none",
+  },
+  formActions: {
+    display: "flex",
+    justifyContent: "flex-end",
+  },
+  submitButton: {
+    backgroundColor: "#3B82F6",
+    color: "white",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.375rem",
+    textDecoration: "none",
+    cursor: "pointer",
+    border: "none",
+  },
+  loadingContainer: {
+    display: "flex",
+    justifyContent: "center",
+    padding: "3rem 0",
+  },
+  spinner: {
+    width: "3rem",
+    height: "3rem",
+    border: "0.25rem solid #E5E7EB",
+    borderTop: "0.25rem solid #3B82F6",
+    borderRadius: "50%",
+    animation: "spin 1s linear infinite",
+  },
+  errorContainer: {
+    backgroundColor: "#FEE2E2",
+    borderLeftWidth: "4px",
+    borderLeftColor: "#EF4444",
+    color: "#B91C1C",
+    padding: "1rem",
+    marginBottom: "1rem",
+    borderRadius: "0.25rem",
+  },
+  postsList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+  },
+  postCard: {
+    backgroundColor: "white",
+    borderRadius: "0.5rem",
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+    overflow: "hidden",
+  },
+  postHeader: {
+    padding: "1.5rem 1.5rem 1rem",
+  },
+  postType: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "0.75rem",
+  },
+  postTypeIcon: {
+    marginRight: "0.5rem",
+    color: "#3B82F6",
+  },
+  postTypeLabel: {
+    fontSize: "0.875rem",
+    fontWeight: "500",
+    color: "#6B7280",
+  },
+  postTitle: {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    marginBottom: "0.5rem",
+    color: "#111827",
+  },
+  postContent: {
+    padding: "0 1.5rem 1.5rem",
+    color: "#4B5563",
+  },
+  postFooter: {
+    display: "flex",
+    justifyContent: "space-between",
+    padding: "1rem 1.5rem",
+    backgroundColor: "#F9FAFB",
+    borderTop: "1px solid #E5E7EB",
+    fontSize: "0.875rem",
+    color: "#6B7280",
+  },
+  emptyState: {
+    textAlign: "center",
+    padding: "3rem 0",
+    color: "#6B7280",
+  },
+  footer: {
+    backgroundColor: "#F9FAFB",
+    borderTop: "1px solid #E5E7EB",
+    padding: "1.5rem",
+    textAlign: "center",
+    color: "#6B7280",
+  },
+};
+
 export default function Posts() {
-  const { user } = useAuth();
   const [showNewPostForm, setShowNewPostForm] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [postType, setPostType] = useState("DISCUSSION");
+
+  // Use auth with a try-catch to handle cases where context might not be available
+  let auth;
+  try {
+    auth = useAuth();
+  } catch (error) {
+    console.error("Auth provider not available:", error);
+  }
 
   const { loading, error, data, refetch } = useQuery(GET_POSTS);
 
@@ -80,31 +300,51 @@ export default function Posts() {
     });
   };
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      <NavBar />
+  const handleLogout = () => {
+    if (auth && auth.logout) {
+      auth.logout();
+    }
+  };
 
-      <main className="flex-grow p-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">Community Posts</h1>
+  return (
+    <div style={styles.container}>
+      <nav style={styles.nav}>
+        <div style={styles.navInner}>
+          <Link href="/" style={styles.logo}>
+            Community App
+          </Link>
+          <div style={styles.navLinks}>
+            <Link href="/dashboard" style={styles.navLink}>
+              Dashboard
+            </Link>
+            <Link href="/profile" style={styles.navLink}>
+              Profile
+            </Link>
+            <button onClick={handleLogout} style={styles.logoutButton}>
+              Logout
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <main style={styles.main}>
+        <div style={styles.content}>
+          <div style={styles.header}>
+            <h1 style={styles.headerTitle}>Community Posts</h1>
             <button
               onClick={() => setShowNewPostForm(!showNewPostForm)}
-              className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+              style={styles.newPostButton}
             >
-              {showNewPostForm ? "Cancel" : "New Post"}
+              {showNewPostForm ? "Cancel" : "+ New Post"}
             </button>
           </div>
 
           {showNewPostForm && (
-            <div className="bg-white p-6 rounded-lg shadow-md mb-8 dark:bg-gray-800">
-              <h2 className="text-xl font-semibold mb-4">Create a New Post</h2>
+            <div style={styles.formContainer}>
+              <h2 style={styles.formTitle}>Create a New Post</h2>
               <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                  <label
-                    htmlFor="title"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                  >
+                <div style={styles.formGroup}>
+                  <label htmlFor="title" style={styles.label}>
                     Title
                   </label>
                   <input
@@ -113,15 +353,12 @@ export default function Posts() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                    style={styles.input}
                   />
                 </div>
 
-                <div className="mb-4">
-                  <label
-                    htmlFor="content"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                  >
+                <div style={styles.formGroup}>
+                  <label htmlFor="content" style={styles.label}>
                     Content
                   </label>
                   <textarea
@@ -129,34 +366,30 @@ export default function Posts() {
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     required
-                    rows="5"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                    style={styles.textarea}
                   ></textarea>
                 </div>
 
-                <div className="mb-4">
-                  <label
-                    htmlFor="type"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                  >
+                <div style={styles.formGroup}>
+                  <label htmlFor="type" style={styles.label}>
                     Post Type
                   </label>
                   <select
                     id="type"
                     value={postType}
                     onChange={(e) => setPostType(e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                    style={styles.select}
                   >
                     <option value="DISCUSSION">Discussion</option>
                     <option value="NEWS">News</option>
                   </select>
                 </div>
 
-                <div className="flex justify-end">
+                <div style={styles.formActions}>
                   <button
                     type="submit"
                     disabled={createLoading}
-                    className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    style={styles.submitButton}
                   >
                     {createLoading ? "Posting..." : "Post"}
                   </button>
@@ -166,41 +399,44 @@ export default function Posts() {
           )}
 
           {loading ? (
-            <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div style={styles.loadingContainer}>
+              <div style={styles.spinner}></div>
             </div>
           ) : error ? (
-            <div
-              className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4"
-              role="alert"
-            >
+            <div style={styles.errorContainer}>
               <p>Error loading posts: {error.message}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-6">
+            <div style={styles.postsList}>
               {data?.posts?.map((post) => (
-                <div
-                  key={post.id}
-                  className="bg-white p-6 rounded-lg shadow-md dark:bg-gray-800"
-                >
-                  <div className="flex items-center mb-3">
-                    {post.type === "NEWS" ? (
-                      <FaNewspaper className="text-blue-500 h-5 w-5 mr-2" />
-                    ) : (
-                      <FaComment className="text-green-500 h-5 w-5 mr-2" />
-                    )}
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      {post.type === "NEWS" ? "News" : "Discussion"}
-                    </span>
+                <div key={post.id} style={styles.postCard}>
+                  <div style={styles.postHeader}>
+                    <div style={styles.postType}>
+                      <span style={styles.postTypeIcon}>
+                        {post.type === "NEWS" ? "📰" : "💬"}
+                      </span>
+                      <span style={styles.postTypeLabel}>
+                        {post.type === "NEWS" ? "News" : "Discussion"}
+                      </span>
+                    </div>
+
+                    <Link
+                      href={`/posts/${post.id}`}
+                      style={{ textDecoration: "none" }}
+                    >
+                      <h2 style={styles.postTitle}>{post.title}</h2>
+                    </Link>
                   </div>
 
-                  <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
+                  <div style={styles.postContent}>
+                    <p>
+                      {post.content.length > 200
+                        ? post.content.substring(0, 200) + "..."
+                        : post.content}
+                    </p>
+                  </div>
 
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    {post.content}
-                  </p>
-
-                  <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
+                  <div style={styles.postFooter}>
                     <span>Posted by {post.author.username}</span>
                     <span>{formatDate(post.createdAt)}</span>
                   </div>
@@ -208,16 +444,21 @@ export default function Posts() {
               ))}
 
               {data?.posts?.length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-gray-500 dark:text-gray-400">
-                    No posts yet. Be the first to create a post!
-                  </p>
+                <div style={styles.emptyState}>
+                  <p>No posts yet. Be the first to create a post!</p>
                 </div>
               )}
             </div>
           )}
         </div>
       </main>
+
+      <footer style={styles.footer}>
+        <p>
+          © {new Date().getFullYear()} Community Engagement App. All rights
+          reserved.
+        </p>
+      </footer>
     </div>
   );
 }
