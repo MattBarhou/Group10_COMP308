@@ -2,13 +2,7 @@
 import { useState } from "react";
 import { useQuery, gql } from "@apollo/client";
 import Link from "next/link";
-import {
-  FaSearch,
-  FaStore,
-  FaMapMarkerAlt,
-  FaEnvelope,
-  FaPhone,
-} from "react-icons/fa";
+import { useAuth } from "../../../lib/auth";
 
 const GET_BUSINESSES = gql`
   query GetBusinesses {
@@ -24,15 +18,255 @@ const GET_BUSINESSES = gql`
   }
 `;
 
+// Inline styles
+const styles = {
+  container: {
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    backgroundColor: "#f3f4f6",
+  },
+  nav: {
+    backgroundColor: "white",
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+    padding: "1rem",
+  },
+  navInner: {
+    maxWidth: "1200px",
+    margin: "0 auto",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  logo: {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    color: "#111827",
+    textDecoration: "none",
+  },
+  navLinks: {
+    display: "flex",
+    gap: "1rem",
+  },
+  navLink: {
+    color: "#4B5563",
+    textDecoration: "none",
+  },
+  logoutButton: {
+    backgroundColor: "#EF4444",
+    color: "white",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.375rem",
+    textDecoration: "none",
+    border: "none",
+    cursor: "pointer",
+  },
+  main: {
+    flexGrow: 1,
+    padding: "2rem",
+  },
+  content: {
+    maxWidth: "1200px",
+    margin: "0 auto",
+  },
+  header: {
+    marginBottom: "2rem",
+  },
+  headerTitle: {
+    fontSize: "2rem",
+    fontWeight: "bold",
+    marginBottom: "0.5rem",
+    color: "#111827",
+  },
+  filterContainer: {
+    backgroundColor: "white",
+    borderRadius: "0.5rem",
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+    padding: "1.5rem",
+    marginBottom: "2rem",
+  },
+  filterForm: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+  },
+  filterRow: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "1rem",
+  },
+  filterGroup: {
+    flexGrow: 1,
+  },
+  label: {
+    display: "block",
+    fontWeight: "500",
+    marginBottom: "0.5rem",
+    color: "#4B5563",
+    fontSize: "0.875rem",
+  },
+  input: {
+    width: "100%",
+    padding: "0.5rem 0.75rem",
+    borderRadius: "0.375rem",
+    border: "1px solid #D1D5DB",
+    outline: "none",
+  },
+  select: {
+    width: "100%",
+    padding: "0.5rem 0.75rem",
+    borderRadius: "0.375rem",
+    border: "1px solid #D1D5DB",
+    outline: "none",
+  },
+  searchIcon: {
+    position: "absolute",
+    top: "50%",
+    left: "0.75rem",
+    transform: "translateY(-50%)",
+    color: "#9CA3AF",
+  },
+  searchInput: {
+    width: "100%",
+    paddingLeft: "2.5rem",
+    padding: "0.5rem 0.75rem 0.5rem 2.5rem",
+    borderRadius: "0.375rem",
+    border: "1px solid #D1D5DB",
+    outline: "none",
+  },
+  businessesGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+    gap: "1.5rem",
+    marginBottom: "2rem",
+  },
+  businessCard: {
+    backgroundColor: "white",
+    borderRadius: "0.5rem",
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    transition: "transform 0.2s, box-shadow 0.2s",
+  },
+  businessCardLink: {
+    textDecoration: "none",
+    color: "inherit",
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+  },
+  businessCardHeader: {
+    padding: "1.5rem 1.5rem 1rem",
+    flexGrow: 1,
+  },
+  businessTitle: {
+    fontSize: "1.25rem",
+    fontWeight: "bold",
+    marginBottom: "0.5rem",
+    color: "#111827",
+  },
+  businessCategory: {
+    display: "inline-block",
+    backgroundColor: "#EBF5FF",
+    color: "#1E40AF",
+    fontSize: "0.75rem",
+    fontWeight: "500",
+    padding: "0.25rem 0.5rem",
+    borderRadius: "9999px",
+    marginBottom: "0.75rem",
+  },
+  businessDescription: {
+    color: "#4B5563",
+    fontSize: "0.875rem",
+    marginBottom: "1rem",
+    display: "-webkit-box",
+    WebkitLineClamp: 3,
+    WebkitBoxOrient: "vertical",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+  businessContact: {
+    fontSize: "0.875rem",
+    color: "#6B7280",
+  },
+  contactItem: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "0.25rem",
+  },
+  businessCardFooter: {
+    padding: "1rem 1.5rem",
+    backgroundColor: "#F9FAFB",
+    borderTop: "1px solid #E5E7EB",
+  },
+  viewButton: {
+    display: "block",
+    textAlign: "center",
+    color: "#3B82F6",
+    fontWeight: "500",
+    fontSize: "0.875rem",
+  },
+  loadingContainer: {
+    display: "flex",
+    justifyContent: "center",
+    padding: "4rem 0",
+  },
+  spinner: {
+    width: "3rem",
+    height: "3rem",
+    border: "0.25rem solid #E5E7EB",
+    borderTopColor: "#3B82F6",
+    borderRadius: "50%",
+  },
+  errorContainer: {
+    backgroundColor: "#FEE2E2",
+    padding: "1rem",
+    borderRadius: "0.375rem",
+    marginBottom: "1rem",
+    color: "#B91C1C",
+  },
+  emptyState: {
+    textAlign: "center",
+    padding: "4rem 0",
+    color: "#6B7280",
+  },
+  footer: {
+    backgroundColor: "#F9FAFB",
+    borderTop: "1px solid #E5E7EB",
+    padding: "1.5rem",
+    textAlign: "center",
+    color: "#6B7280",
+  },
+};
+
 export default function Businesses() {
-  const { loading, error, data } = useQuery(GET_BUSINESSES);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
+  // Use auth with try-catch to handle cases where context might not be available
+  let auth;
+  try {
+    auth = useAuth();
+  } catch (error) {
+    console.error("Auth provider not available:", error);
+  }
+
+  const { loading, error, data } = useQuery(GET_BUSINESSES);
+
+  const handleLogout = () => {
+    if (auth && auth.logout) {
+      auth.logout();
+    }
+  };
+
+  // Extract unique categories from businesses
   const categories = data?.getBusinesses
     ? [...new Set(data.getBusinesses.map((business) => business.category))]
     : [];
 
+  // Filter businesses based on search term and category
   const filteredBusinesses = data?.getBusinesses
     ? data.getBusinesses.filter((business) => {
         const matchesSearch =
@@ -48,103 +282,134 @@ export default function Businesses() {
     : [];
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Local Businesses</h1>
+    <div style={styles.container}>
+      <nav style={styles.nav}>
+        <div style={styles.navInner}>
+          <Link href="/" style={styles.logo}>
+            Community App
+          </Link>
+          <div style={styles.navLinks}>
+            <Link href="/dashboard" style={styles.navLink}>
+              Dashboard
+            </Link>
+            <Link href="/profile" style={styles.navLink}>
+              Profile
+            </Link>
+            <button onClick={handleLogout} style={styles.logoutButton}>
+              Logout
+            </button>
+          </div>
+        </div>
+      </nav>
 
-      <div className="bg-white p-6 rounded-lg shadow-md mb-8 dark:bg-gray-800">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-grow">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <FaSearch className="text-gray-400" />
+      <main style={styles.main}>
+        <div style={styles.content}>
+          <div style={styles.header}>
+            <h1 style={styles.headerTitle}>Local Businesses</h1>
+            <p>Discover and support local businesses in your community.</p>
+          </div>
+
+          <div style={styles.filterContainer}>
+            <div style={styles.filterForm}>
+              <div style={styles.filterRow}>
+                <div style={{ ...styles.filterGroup, position: "relative" }}>
+                  <label htmlFor="search" style={styles.label}>
+                    Search Businesses
+                  </label>
+                  <div style={{ position: "relative" }}>
+                    <span style={styles.searchIcon}>🔍</span>
+                    <input
+                      id="search"
+                      type="text"
+                      placeholder="Search by name or description..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      style={styles.searchInput}
+                    />
+                  </div>
+                </div>
+
+                <div style={styles.filterGroup}>
+                  <label htmlFor="category" style={styles.label}>
+                    Filter by Category
+                  </label>
+                  <select
+                    id="category"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    style={styles.select}
+                  >
+                    <option value="">All Categories</option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <input
-                type="text"
-                placeholder="Search businesses..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
-              />
             </div>
           </div>
 
-          <div className="md:w-64">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
-            >
-              <option value="">All Categories</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
+          {loading ? (
+            <div style={styles.loadingContainer}>
+              <div style={styles.spinner}></div>
+            </div>
+          ) : error ? (
+            <div style={styles.errorContainer}>
+              <p>Error loading businesses: {error.message}</p>
+            </div>
+          ) : (
+            <div style={styles.businessesGrid}>
+              {filteredBusinesses.map((business) => (
+                <div key={business.id} style={styles.businessCard}>
+                  <Link
+                    href={`/businesses/${business.id}`}
+                    style={styles.businessCardLink}
+                  >
+                    <div style={styles.businessCardHeader}>
+                      <h2 style={styles.businessTitle}>{business.name}</h2>
+                      <div style={styles.businessCategory}>
+                        {business.category}
+                      </div>
+                      <p style={styles.businessDescription}>
+                        {business.description}
+                      </p>
+                      <div style={styles.businessContact}>
+                        <div style={styles.contactItem}>
+                          📍 {business.address}
+                        </div>
+                        <div style={styles.contactItem}>
+                          📱 {business.phone}
+                        </div>
+                        <div style={styles.contactItem}>
+                          ✉️ {business.email}
+                        </div>
+                      </div>
+                    </div>
+                    <div style={styles.businessCardFooter}>
+                      <span style={styles.viewButton}>View Details</span>
+                    </div>
+                  </Link>
+                </div>
               ))}
-            </select>
-          </div>
-        </div>
-      </div>
 
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        </div>
-      ) : error ? (
-        <div
-          className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4"
-          role="alert"
-        >
-          <p>Error loading businesses: {error.message}</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredBusinesses.map((business) => (
-            <Link href={`/businesses/${business.id}`} key={business.id}>
-              <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow dark:bg-gray-800">
-                <div className="p-6">
-                  <div className="flex items-center mb-3">
-                    <FaStore className="text-blue-500 h-5 w-5 mr-2" />
-                    <h2 className="text-xl font-semibold">{business.name}</h2>
-                  </div>
-
-                  <p className="text-gray-600 mb-4 dark:text-gray-400">
-                    {business.description}
-                  </p>
-
-                  <div className="text-sm text-gray-500 space-y-2 dark:text-gray-400">
-                    <div className="flex items-center">
-                      <FaMapMarkerAlt className="mr-2" />
-                      <span>{business.address}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <FaPhone className="mr-2" />
-                      <span>{business.phone}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <FaEnvelope className="mr-2" />
-                      <span>{business.email}</span>
-                    </div>
-                  </div>
+              {filteredBusinesses.length === 0 && (
+                <div style={styles.emptyState} className="col-span-full">
+                  <p>No businesses found matching your criteria.</p>
                 </div>
-
-                <div className="bg-gray-50 px-6 py-3 dark:bg-gray-700">
-                  <span className="text-xs font-medium bg-blue-100 text-blue-600 px-2 py-1 rounded-full dark:bg-blue-900 dark:text-blue-300">
-                    {business.category}
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ))}
-
-          {filteredBusinesses.length === 0 && (
-            <div className="col-span-full text-center py-12">
-              <p className="text-gray-500 dark:text-gray-400">
-                No businesses found matching your criteria.
-              </p>
+              )}
             </div>
           )}
         </div>
-      )}
+      </main>
+
+      <footer style={styles.footer}>
+        <p>
+          © {new Date().getFullYear()} Community Engagement App. All rights
+          reserved.
+        </p>
+      </footer>
     </div>
   );
 }
