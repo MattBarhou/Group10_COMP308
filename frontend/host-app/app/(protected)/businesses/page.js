@@ -261,6 +261,8 @@ export default function Businesses() {
     }
   };
 
+  const businesses = data?.getBusinesses || [];
+
   // Extract unique categories from businesses
   const categories = data?.getBusinesses
     ? [...new Set(data.getBusinesses.map((business) => business.category))]

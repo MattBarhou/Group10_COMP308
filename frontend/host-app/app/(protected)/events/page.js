@@ -335,6 +335,21 @@ export default function Events() {
         <div style={styles.content}>
           <div style={styles.header}>
             <h1 style={styles.headerTitle}>Community Events</h1>
+            {auth?.user && (
+                <div style={{ marginTop: "1rem" }}>
+                  <Link href="/events/new" style={{
+                    backgroundColor: "#10B981",
+                    color: "white",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "0.375rem",
+                    textDecoration: "none",
+                    fontWeight: "500"
+                  }}>
+                    + Create New Event
+                  </Link>
+                </div>
+            )}
+
             <p>Discover and participate in local events and activities.</p>
           </div>
 

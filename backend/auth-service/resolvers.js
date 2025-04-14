@@ -4,7 +4,7 @@ require('dotenv').config();
 const User = require('./models/User');
 
 // Use the environment variable
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+const JWT_SECRET = process.env.JWT_SECRET || 'community_app';
 
 // Helper to generate JWT
 const generateToken = (user) => {

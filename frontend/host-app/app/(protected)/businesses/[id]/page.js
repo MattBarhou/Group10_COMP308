@@ -401,7 +401,6 @@ export default function BusinessDetails() {
   const [reviewText, setReviewText] = useState("");
   const [responseTexts, setResponseTexts] = useState({});
 
-  // Use auth with try-catch to handle cases where context might not be available
   let auth = useAuth();
   // try {
   //   auth = useAuth();
