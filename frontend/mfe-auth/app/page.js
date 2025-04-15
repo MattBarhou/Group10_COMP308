@@ -1,7 +1,7 @@
 'use client';
 
-import AuthNavigation from './components/AuthNavigation';
-import { useAuthContext } from './context/AuthContext';
+import AuthNavigation from '@/app/components/AuthNavigation';
+import { useAuthContext } from '@/app/context/AuthContext';
 
 export default function Home() {
   const { isAuthenticated, user, loading } = useAuthContext();
@@ -35,14 +35,14 @@ export default function Home() {
               <p className="mb-4 dark:text-white">Join our community to get started!</p>
               <div className="space-x-4">
                 <a
-                  href="/auth/login"
+                  href="/frontend/mfe-auth/app/pages/login"
                   className="inline-block bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100
                                                             px-5 py-3 rounded-md font-medium hover:bg-gray-200 dark:hover:bg-gray-600"
                 >
                   Sign In
                 </a>
                 <a
-                  href="/auth/register"
+                  href="/frontend/mfe-auth/app/pages/register"
                   className="inline-block bg-blue-600 text-white px-5 py-3 rounded-md font-medium
                                                             hover:bg-blue-700"
                 >

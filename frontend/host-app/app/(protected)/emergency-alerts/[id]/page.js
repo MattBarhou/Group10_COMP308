@@ -220,12 +220,12 @@ export default function EmergencyAlertDetails() {
   const { id } = useParams();
 
   // Use auth with try-catch to handle cases where context might not be available
-  let auth;
-  try {
-    auth = useAuth();
-  } catch (error) {
-    console.error("Auth provider not available:", error);
-  }
+  let auth = useAuth();
+  // try {
+  //   auth = useAuth();
+  // } catch (error) {
+  //   console.error("Auth provider not available:", error);
+  // }
 
   const { loading, error, data } = useQuery(GET_EMERGENCY_ALERT, {
     variables: { id },
@@ -497,7 +497,7 @@ export default function EmergencyAlertDetails() {
                   </li>
                   <li style={styles.safetyTip}>Have an emergency plan ready</li>
                   <li style={styles.safetyTip}>
-                    Help others who may need assistance if it's safe to do so
+                    Help others who may need assistance if it&apos;s safe to do so
                   </li>
                 </ul>
               </div>

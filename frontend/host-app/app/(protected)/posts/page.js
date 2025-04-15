@@ -259,12 +259,12 @@ export default function Posts() {
   const [postType, setPostType] = useState("DISCUSSION");
 
   // Use auth with a try-catch to handle cases where context might not be available
-  let auth;
-  try {
-    auth = useAuth();
-  } catch (error) {
-    console.error("Auth provider not available:", error);
-  }
+  let auth = useAuth();
+  // try {
+  //   auth = useAuth();
+  // } catch (error) {
+  //   console.error("Auth provider not available:", error);
+  // }
 
   const { loading, error, data, refetch } = useQuery(GET_POSTS);
 

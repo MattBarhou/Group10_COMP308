@@ -191,12 +191,12 @@ export default function PostDetails() {
   const { id } = useParams();
 
   // Use auth with a try-catch to handle cases where context might not be available
-  let auth;
-  try {
-    auth = useAuth();
-  } catch (error) {
-    console.error("Auth provider not available:", error);
-  }
+  let auth = useAuth();
+  // try {
+  //   auth = useAuth();
+  // } catch (error) {
+  //   console.error("Auth provider not available:", error);
+  // }
 
   const { loading, error, data } = useQuery(GET_POST, {
     variables: { id },

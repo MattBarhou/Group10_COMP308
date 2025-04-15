@@ -2,6 +2,26 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../../../lib/auth";
+import {gql, useMutation} from "@apollo/client";
+import {router} from "next/client.js";
+import {useRouter} from "next/navigation";
+
+// GraphQL Queries and Mutations
+
+export const REGISTER_MUTATION = gql`
+  mutation Register($input: RegisterInput!) {
+    register(input: $input) {
+      token
+      user {
+        id
+        username
+        email
+        role
+        profileImage
+      }
+    }
+  }
+`;
 
 // Inline styles
 const styles = {
@@ -116,40 +136,57 @@ const styles = {
 };
 
 export default function Register() {
-  let auth;
-  try {
-    auth = useAuth();
-  } catch (error) {
-    console.error("Auth provider not available:", error);
-  }
-
+  const auth = useAuth();
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("resident");
   const [error, setError] = useState("");
+  const [registerUser, {loading}] = useMutation(REGISTER_MUTATION, {
+    onCompleted: (data) => {
+      auth.login(data.register.token, data.register.user);
+      router.push('/login');
+    },
+    onError: (error) => {
+      setError(error.message);
+    },
+  });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     // Basic validation
+    if (!username || !email || !password || !confirmPassword) {
+      setError('Please fill in all fields');
+      return;
+    }
     if (password !== confirmPassword) {
       setError("Passwords don't match");
       return;
     }
-
-    console.log("Registration attempt with:", {
-      username,
-      email,
-      password,
-      role,
-    });
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+    console.log("Registration attempt with:", {username, email, password, role,});
 
     if (auth && auth.login) {
-      const mockToken = "mock-token-123";
-      const mockUser = { id: "123", username, email, role };
-      auth.login(mockToken, mockUser);
+      // const mockToken = "mock-token-123";
+      // const mockUser = { id: "123", username, email, role };
+      // auth.login(mockToken, mockUser);
+      await registerUser({
+        variables: {
+          input: {
+            username,
+            email,
+            password,
+            role,
+          },
+        },
+      });
+      alert("User Registered successfully! Now you can login")
+      router.push('/login')
     } else {
       console.log(
         "Auth provider not available, registration functionality limited"

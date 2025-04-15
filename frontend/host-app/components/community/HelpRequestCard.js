@@ -84,7 +84,7 @@ export default function HelpRequestCard({
 
         {isVolunteer && (
           <span className="block text-center text-green-600 font-medium dark:text-green-400">
-            You're helping with this request
+            You&apos;re helping with this request
           </span>
         )}
 

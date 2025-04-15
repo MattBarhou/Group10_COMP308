@@ -304,12 +304,12 @@ export default function ManageEvents() {
   });
 
   // Use auth with try-catch to handle cases where context might not be available
-  let auth;
-  try {
-    auth = useAuth();
-  } catch (error) {
-    console.error("Auth provider not available:", error);
-  }
+  let auth = useAuth();
+  // try {
+  //   auth = useAuth();
+  // } catch (error) {
+  //   console.error("Auth provider not available:", error);
+  // }
 
   const { loading, error, data, refetch } = useQuery(GET_MY_EVENTS);
 
@@ -637,7 +637,7 @@ export default function ManageEvents() {
               <div style={styles.emptyIcon}>📅</div>
               <h2 style={styles.emptyTitle}>No Events Yet</h2>
               <p style={styles.emptyText}>
-                You haven't created any events yet. Create your first event to
+                You haven&apos;t created any events yet. Create your first event to
                 get started.
               </p>
               <button

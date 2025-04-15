@@ -228,13 +228,13 @@ export default function Profile() {
   const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [passwordError, setPasswordError] = useState("");
 
-  // Use auth with try-catch to handle cases where context might not be available
-  let auth;
-  try {
-    auth = useAuth();
-  } catch (error) {
-    console.error("Auth provider not available:", error);
-  }
+
+  let auth = useAuth();
+  // try {
+  //   auth = useAuth();
+  // } catch (error) {
+  //   console.error("Auth provider not available:", error);
+  // }
 
   const [updateUser, { loading: updateLoading }] = useMutation(UPDATE_USER, {
     onCompleted: () => {

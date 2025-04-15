@@ -51,6 +51,7 @@ const resolvers = {
 
     Mutation: {
         createPost: async (_, { title, content, type }, { user }) => {
+            console.log(user)
             if (!user) throw new Error('Authentication required');
             const post = new Post({
                 title,

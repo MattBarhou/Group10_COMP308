@@ -36,10 +36,13 @@ async function startServer() {
         context: ({ req }) => {
             const authHeader = req.headers.authorization || '';
             let token = '';
+            console.log(authHeader);
             if (authHeader.startsWith('Bearer ')) {
                 token = authHeader.slice(7).trim();
             }
+            console.log(token)
             const user = getUser(token);
+            console.log(user)
             return { user };
         },
         formatError: (error) => {

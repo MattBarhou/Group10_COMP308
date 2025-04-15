@@ -1,6 +1,26 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import {gql, useMutation} from "@apollo/client";
+import {router} from "next/client.js";
+import {useRouter} from "next/navigation";
+import {useAuth} from "@/lib/auth.js";
+
+// GraphQL Queries and Mutations
+export const LOGIN_MUTATION = gql`
+  mutation Login($input: LoginInput!) {
+    login(input: $input) {
+      token
+      user {
+        id
+        username
+        email
+        role
+        profileImage
+      }
+    }
+  }
+`;
 
 // Inline styles
 const styles = {
@@ -108,12 +128,40 @@ const styles = {
 };
 
 export default function Login() {
+  const auth = useAuth();
+  const [error, setError] = useState('');
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginUser, {loading}] = useMutation(LOGIN_MUTATION, {
+    onCompleted: (data) => {
+      auth.login(data.login.token, data.login.user);
+      router.push('/');
+    },
+    onError: (error) => {
+      setError(error.message);
+    },
+  });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
     console.log("Login attempt with:", email, password);
+    try {
+      await loginUser({
+        variables: {
+          input: {
+            email,
+            password,
+          },
+        },
+      });
+    } catch (err) {
+      // Error handling is already done in onError callback
+    }
   };
 
   return (
@@ -174,7 +222,7 @@ export default function Login() {
             </form>
 
             <div style={styles.footer}>
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/register" style={styles.footerLink}>
                 Sign up
               </Link>

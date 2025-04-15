@@ -166,12 +166,12 @@ export default function EventDetails() {
   const { id } = useParams();
 
   // Use auth with try-catch to handle cases where context might not be available
-  let auth;
-  try {
-    auth = useAuth();
-  } catch (error) {
-    console.error("Auth provider not available:", error);
-  }
+  let auth = useAuth();
+  // try {
+  //   auth = useAuth();
+  // } catch (error) {
+  //   console.error("Auth provider not available:", error);
+  // }
 
   const { loading, error, data, refetch } = useQuery(GET_EVENT, {
     variables: { id },
@@ -443,7 +443,7 @@ export default function EventDetails() {
               {isVolunteer && (
                 <div style={styles.alreadyVolunteeringNote}>
                   <span>✅</span>
-                  <span>You're volunteering for this event</span>
+                  <span>You&apos;re volunteering for this event</span>
                 </div>
               )}
 
